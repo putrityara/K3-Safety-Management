@@ -1,0 +1,6 @@
+{
+  "name": "K3 Safety Management System",
+  "description": "Enterprise HSE & K3 Occupational Health and Safety Management System for mining, manufacturing, and industrial operations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
