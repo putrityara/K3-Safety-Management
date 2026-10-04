@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#061A2D"/>
+      <stop offset="100%" stop-color="#0F2B48"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10A875"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+
+  <!-- Outer Safety Border -->
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#10A875" stroke-width="8" stroke-opacity="0.4"/>
+
+  <!-- Protective Hard Hat / Shield Base -->
+  <g filter="url(#shadow)">
+    <!-- Shield Outline -->
+    <path d="M 256,90 L 390,140 C 390,260 330,340 256,410 C 182,340 122,260 122,140 Z" fill="url(#greenGrad)" stroke="#34D399" stroke-width="6"/>
+    
+    <!-- Inner Dark Accent Shield -->
+    <path d="M 256,112 L 368,154 C 368,252 318,318 256,378 C 194,318 144,252 144,154 Z" fill="#071D32"/>
+    
+    <!-- White K3 Safety Cross -->
+    <path d="M 230,170 H 282 V 222 H 334 V 274 H 282 V 326 H 230 V 274 H 178 V 222 H 230 Z" fill="#FFFFFF" rx="6"/>
+
+    <!-- Subtle Safety Star Accents -->
+    <circle cx="256" cy="140" r="5" fill="#F5B51B"/>
+    <circle cx="200" cy="350" r="4" fill="#F5B51B"/>
+    <circle cx="312" cy="350" r="4" fill="#F5B51B"/>
+  </g>
+
+  <!-- K3 Brand Label Badge -->
+  <rect x="186" y="420" width="140" height="42" rx="21" fill="#F5B51B"/>
+  <text x="256" y="448" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="22" font-weight="900" fill="#061A2D" text-anchor="middle" letter-spacing="2">K3 SAFETY</text>
+</svg>

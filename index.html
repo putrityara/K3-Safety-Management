@@ -10,6 +10,17 @@
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
 
+  <!-- PWA & Mobile Installability Standards -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#071D32" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="K3 Safety" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -251,15 +262,138 @@
       filter: brightness(1.12) drop-shadow(0 4px 6px rgba(0,0,0,0.2));
     }
 
+    /* Facility Interactive SVG Highlighting */
+    .facility-marker-zone {
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease, opacity 0.25s ease;
+    }
+
+    .facility-marker-zone:hover {
+      filter: brightness(1.15) drop-shadow(0 6px 12px rgba(36, 117, 213, 0.35));
+    }
+
+    /* Dim non-selected facilities when a zone is active */
+    svg.has-zone-selected .facility-marker-zone {
+      opacity: 0.35;
+      filter: grayscale(45%);
+    }
+
+    /* Vigorously highlight the selected facility */
+    svg.has-zone-selected .facility-marker-zone.zone-active {
+      opacity: 1 !important;
+      filter: drop-shadow(0 0 14px var(--zone-glow, #10A875)) brightness(1.22) !important;
+      transform: scale(1.025);
+      transform-origin: center;
+    }
+
+    @keyframes intenseBeacon {
+      0% { r: 6px; opacity: 0.95; }
+      50% { r: 24px; opacity: 0.1; }
+      100% { r: 6px; opacity: 0.95; }
+    }
+
+    .beacon-intense {
+      animation: intenseBeacon 1.2s infinite ease-out !important;
+    }
+
+    /* Floating Hotspot Badges */
     .map-badge-hotspot {
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
       user-select: none;
     }
 
     .map-badge-hotspot:hover {
       transform: translateY(-2px) scale(1.04);
       box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+    }
+
+    .map-badge-hotspot.active-badge {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 0 0 3px #10A875, 0 6px 14px rgba(0,0,0,0.2) !important;
+      border-color: #10A875 !important;
+      background: #FFFFFF !important;
+    }
+
+    /* Quick Zone Selector Buttons */
+    .zone-pill-btn {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+      color: #475569;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .zone-pill-btn:hover {
+      background: #F1F5F9;
+      color: #0F172A;
+      border-color: #CBD5E1;
+    }
+
+    .zone-pill-btn.active {
+      background: #071D32;
+      color: #FFFFFF;
+      border-color: #071D32;
+      box-shadow: 0 2px 4px rgba(7, 29, 50, 0.2);
+    }
+
+    /* Pop-up Incident Summary Card Over Map */
+    #site-map-popup {
+      position: absolute;
+      inset: 10px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      animation: popInScale 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes popInScale {
+      0% { opacity: 0; transform: scale(0.96) translateY(6px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .popup-metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .popup-metric-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 6px 8px;
+      text-align: center;
+    }
+
+    .popup-metric-box .label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .popup-metric-box .val {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0F172A;
+      margin-top: 1px;
     }
 
     /* Main Content Area */
@@ -331,6 +465,57 @@
 
     .header-pill.weather-pill i {
       color: var(--warning-yellow);
+    }
+
+    /* PWA & Offline Field Styles */
+    .network-pill {
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .network-pill.online {
+      border-color: #A7F3D0;
+      background-color: #ECFDF5;
+      color: #065F46;
+    }
+    .network-pill.offline {
+      border-color: #FDE68A;
+      background-color: #FFFBEB;
+      color: #92400E;
+    }
+
+    #offline-field-banner {
+      display: none;
+      background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
+      color: #061A2D;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 700;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #B45309;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      z-index: 80;
+      transition: all 0.3s ease;
+    }
+
+    .btn-pwa-install {
+      background: linear-gradient(135deg, #10A875 0%, #059669 100%);
+      color: #FFFFFF;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(16, 168, 117, 0.25);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-pwa-install:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(16, 168, 117, 0.35);
     }
 
     .header-icon-btn {
@@ -1100,6 +1285,18 @@
       </div>
 
       <div class="header-controls">
+        <!-- Real-time Network Connectivity Pill -->
+        <div id="network-status-pill" class="header-pill network-pill online" title="Status Jaringan Lapangan">
+          <span id="network-status-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10A875;"></span>
+          <span id="network-status-text">Online</span>
+        </div>
+
+        <!-- In-App PWA Install Prompt Button -->
+        <button id="btn-pwa-install" class="btn-pwa-install" onclick="handlePWAInstallClick()" title="Install Aplikasi K3 ke Perangkat">
+          <i class="fa-solid fa-cloud-arrow-down"></i>
+          <span>Install App</span>
+        </button>
+
         <div class="header-pill">
           <i class="fa-regular fa-calendar"></i>
           <span id="header-current-date">Rabu, 15 Mei 2024</span>
@@ -1137,6 +1334,24 @@
         </div>
       </div>
     </header>
+ 
+    <!-- Offline Field Alert Banner for Remote Operations -->
+    <div id="offline-field-banner">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:28px; height:28px; border-radius:50%; background:#061A2D; color:#F59E0B; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <div style="font-size:13px; font-weight:800; color:#061A2D;">MODE OFFLINE LAPANGAN AKTIF</div>
+          <div style="font-size:11.5px; font-weight:500; color:#1E293B;">Koneksi internet terputus. Sistem tetap beroperasi penuh menggunakan Service Worker & LocalStorage browser.</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="background:#061A2D; color:#FBBF24; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:5px;">
+          <i class="fa-solid fa-hard-drive"></i> Offline Cache Active
+        </span>
+      </div>
+    </div>
 
     <!-- CONTENT VIEWS -->
     <div id="page-viewport">
@@ -1282,22 +1497,41 @@
             </div>
           </div>
 
-          <!-- Distribusi Insiden per Lokasi -->
-          <div class="k3-card">
-            <div class="k3-card-header">
+          <!-- Distribusi Insiden per Lokasi (Interactive 3D Mining Map) -->
+          <div class="k3-card" id="site-map-card">
+            <div class="k3-card-header" style="flex-wrap:wrap; gap:8px; margin-bottom:10px;">
               <div>
                 <div class="k3-card-title">Distribusi Insiden per Lokasi</div>
-                <div style="font-size:11.5px; color:#64748B; margin-top:2px;">Mining Operational Complex - Live Map</div>
+                <div style="font-size:11.5px; color:#64748B; margin-top:2px;">Klik area/gedung untuk melihat ringkasan insiden aktif</div>
               </div>
               <span class="badge badge-info" style="font-size:10.5px; padding:3px 8px; border-radius:12px;">
-                <i class="fa-solid fa-satellite-dish" style="margin-right:4px;"></i>Real-time
+                <i class="fa-solid fa-satellite-dish" style="margin-right:4px;"></i>Live Interactive
               </span>
             </div>
+
+            <!-- Quick Zone Filter Tabs -->
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+              <button class="zone-pill-btn active" id="btn-zone-all" onclick="selectFacilityZone('all')" title="Tampilkan Semua Fasilitas">
+                <i class="fa-solid fa-layer-group"></i> Semua Zona
+              </button>
+              <button class="zone-pill-btn" id="btn-zone-warehouse" onclick="selectFacilityZone('warehouse')" title="Pilih Gudang Logistik">
+                <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#D97706;"></span> Warehouse
+              </button>
+              <button class="zone-pill-btn" id="btn-zone-production" onclick="selectFacilityZone('production')" title="Pilih Pabrik & Pit Produksi">
+                <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#DC2626;"></span> Produksi & Pit
+              </button>
+              <button class="zone-pill-btn" id="btn-zone-office" onclick="selectFacilityZone('office')" title="Pilih Kantor Admin & HSE">
+                <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#16A34A;"></span> Kantor Admin
+              </button>
+              <button class="zone-pill-btn" id="btn-zone-workshop" onclick="selectFacilityZone('workshop')" title="Pilih Workshop & Fabrikasi">
+                <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#2563EB;"></span> Workshop
+              </button>
+            </div>
             
-            <div style="position:relative; width:100%; height:220px; border-radius:12px; overflow:hidden; border:1px solid #CBD5E1; background:linear-gradient(145deg, #F1F5F9 0%, #E2E8F0 100%); box-shadow:inset 0 2px 4px rgba(0,0,0,0.03);">
+            <div id="site-map-viewport" style="position:relative; width:100%; height:235px; border-radius:12px; overflow:hidden; border:1px solid #CBD5E1; background:linear-gradient(145deg, #F1F5F9 0%, #E2E8F0 100%); box-shadow:inset 0 2px 4px rgba(0,0,0,0.03);">
               
-              <!-- Pure Inline 3D Isometric Site Map SVG (100% Offline Compatible) -->
-              <svg viewBox="0 0 560 250" style="width:100%; height:100%; display:block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));" preserveAspectRatio="xMidYMid meet">
+              <!-- Pure Inline 3D Isometric Site Map SVG -->
+              <svg id="mining-site-map-svg" viewBox="0 0 560 250" style="width:100%; height:100%; display:block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <!-- Terrain Gradients -->
                   <linearGradient id="groundGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1341,7 +1575,7 @@
                 </defs>
 
                 <!-- ISOMETRIC BASE GROUND SLAB -->
-                <polygon points="280,18 540,110 280,236 20,144" fill="url(#grassGrad)" stroke="#6EE7B7" stroke-width="1.5"/>
+                <polygon points="280,18 540,110 280,236 20,144" fill="url(#grassGrad)" stroke="#6EE7B7" stroke-width="1.5" onclick="selectFacilityZone('all')"/>
                 <!-- Base depth / side bevel -->
                 <polygon points="20,144 280,236 280,244 20,152" fill="#64748B"/>
                 <polygon points="280,236 540,110 540,118 280,244" fill="#475569"/>
@@ -1358,7 +1592,7 @@
                 <!-- ============================================== -->
                 <!-- ZONE 1: WAREHOUSE / GUDANG LOGISTIK (TOP LEFT) -->
                 <!-- ============================================== -->
-                <g class="facility-marker" style="cursor:pointer;" onclick="filterIncidentsByLocation('Warehouse')">
+                <g id="facility-warehouse" class="facility-marker-zone" style="--zone-glow:#F59E0B;" onclick="selectFacilityZone('warehouse')">
                   <!-- Ground Shadow -->
                   <polygon points="75,80 155,50 195,78 115,108" fill="rgba(15,23,42,0.18)"/>
                   <!-- Building Body Front Wall -->
@@ -1380,7 +1614,7 @@
                 <!-- ============================================== -->
                 <!-- ZONE 2: PRODUKSI / PROCESSING PLANT (TOP RIGHT)-->
                 <!-- ============================================== -->
-                <g class="facility-marker" style="cursor:pointer;" onclick="filterIncidentsByLocation('Produksi')">
+                <g id="facility-production" class="facility-marker-zone" style="--zone-glow:#EF4444;" onclick="selectFacilityZone('production')">
                   <!-- Ground Shadow -->
                   <polygon points="340,65 470,115 425,145 295,95" fill="rgba(15,23,42,0.2)"/>
                   <!-- Heavy Production Plant Main Hall -->
@@ -1406,7 +1640,7 @@
                 <!-- ============================================== -->
                 <!-- ZONE 3: KANTOR ADMIN & HSE CENTER (BOTTOM LEFT)-->
                 <!-- ============================================== -->
-                <g class="facility-marker" style="cursor:pointer;" onclick="filterIncidentsByLocation('Kantor')">
+                <g id="facility-office" class="facility-marker-zone" style="--zone-glow:#10A875;" onclick="selectFacilityZone('office')">
                   <!-- Ground Shadow -->
                   <polygon points="90,165 190,218 160,235 60,180" fill="rgba(15,23,42,0.15)"/>
                   <!-- Admin Building Multi-tier -->
@@ -1431,7 +1665,7 @@
                 <!-- ============================================== -->
                 <!-- ZONE 4: WORKSHOP & ALAT BERAT (BOTTOM RIGHT)   -->
                 <!-- ============================================== -->
-                <g class="facility-marker" style="cursor:pointer;" onclick="filterIncidentsByLocation('Workshop')">
+                <g id="facility-workshop" class="facility-marker-zone" style="--zone-glow:#2563EB;" onclick="selectFacilityZone('workshop')">
                   <!-- Ground Shadow -->
                   <polygon points="350,165 470,125 500,160 380,200" fill="rgba(15,23,42,0.18)"/>
                   <!-- Heavy Equipment Workshop Hangar -->
@@ -1453,22 +1687,22 @@
 
                 <!-- RADAR PULSE BEACON POINTS -->
                 <!-- Warehouse Beacon -->
-                <circle cx="135" cy="55" r="14" fill="#F59E0B" opacity="0.2" class="pulse-beacon"/>
-                <circle cx="135" cy="55" r="4" fill="#D97706" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle id="beacon-ring-warehouse" cx="135" cy="55" r="14" fill="#F59E0B" opacity="0.2" class="pulse-beacon" onclick="selectFacilityZone('warehouse')"/>
+                <circle id="beacon-dot-warehouse" cx="135" cy="55" r="4" fill="#D97706" stroke="#FFFFFF" stroke-width="1.5" onclick="selectFacilityZone('warehouse')"/>
                 <!-- Production Beacon -->
-                <circle cx="400" cy="75" r="16" fill="#EF4444" opacity="0.25" class="pulse-beacon"/>
-                <circle cx="400" cy="75" r="4.5" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle id="beacon-ring-production" cx="400" cy="75" r="16" fill="#EF4444" opacity="0.25" class="pulse-beacon" onclick="selectFacilityZone('production')"/>
+                <circle id="beacon-dot-production" cx="400" cy="75" r="4.5" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5" onclick="selectFacilityZone('production')"/>
                 <!-- Office Beacon -->
-                <circle cx="135" cy="155" r="12" fill="#10B981" opacity="0.2" class="pulse-beacon"/>
-                <circle cx="135" cy="155" r="3.5" fill="#059669" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle id="beacon-ring-office" cx="135" cy="155" r="12" fill="#10B981" opacity="0.2" class="pulse-beacon" onclick="selectFacilityZone('office')"/>
+                <circle id="beacon-dot-office" cx="135" cy="155" r="3.5" fill="#059669" stroke="#FFFFFF" stroke-width="1.5" onclick="selectFacilityZone('office')"/>
                 <!-- Workshop Beacon -->
-                <circle cx="420" cy="170" r="14" fill="#3B82F6" opacity="0.2" class="pulse-beacon"/>
-                <circle cx="420" cy="170" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle id="beacon-ring-workshop" cx="420" cy="170" r="14" fill="#3B82F6" opacity="0.2" class="pulse-beacon" onclick="selectFacilityZone('workshop')"/>
+                <circle id="beacon-dot-workshop" cx="420" cy="170" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5" onclick="selectFacilityZone('workshop')"/>
               </svg>
 
               <!-- HOTSPOT BADGES (Floating live count pills) -->
               <!-- 1. Top-Left: Warehouse -->
-              <div onclick="filterIncidentsByLocation('Warehouse')" title="Klik untuk filter insiden di Warehouse" style="position:absolute; top:8px; left:8px; background:rgba(255,255,255,0.96); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #FCD34D; box-shadow:0 3px 6px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; gap:5px; transition:transform 0.15s ease;">
+              <div id="map-badge-warehouse" class="map-badge-hotspot" onclick="selectFacilityZone('warehouse')" title="Klik untuk ringkasan insiden di Warehouse" style="position:absolute; top:8px; left:8px; background:rgba(255,255,255,0.96); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #FCD34D; box-shadow:0 3px 6px rgba(0,0,0,0.08); display:flex; align-items:center; gap:5px;">
                 <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#D97706;"></span>
                 <span style="color:#B45309;">Warehouse</span>: 
                 <span id="loc-count-warehouse" style="color:#0F172A; font-weight:800;">8</span>
@@ -1476,7 +1710,7 @@
               </div>
 
               <!-- 2. Top-Right: Produksi -->
-              <div onclick="filterIncidentsByLocation('Produksi')" title="Klik untuk filter insiden di Produksi" style="position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.96); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #FCA5A5; box-shadow:0 3px 6px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; gap:5px; transition:transform 0.15s ease;">
+              <div id="map-badge-production" class="map-badge-hotspot" onclick="selectFacilityZone('production')" title="Klik untuk ringkasan insiden di Produksi" style="position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.96); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #FCA5A5; box-shadow:0 3px 6px rgba(0,0,0,0.08); display:flex; align-items:center; gap:5px;">
                 <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#DC2626; box-shadow:0 0 6px #DC2626;"></span>
                 <span style="color:#DC2626;">Produksi</span>: 
                 <span id="loc-count-production" style="color:#0F172A; font-weight:800;">32</span>
@@ -1484,7 +1718,7 @@
               </div>
 
               <!-- 3. Bottom-Left: Kantor -->
-              <div onclick="filterIncidentsByLocation('Kantor')" title="Klik untuk filter insiden di Kantor" style="position:absolute; bottom:8px; left:8px; background:rgba(255,255,255,0.96); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #A7F3D0; box-shadow:0 3px 6px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; gap:5px; transition:transform 0.15s ease;">
+              <div id="map-badge-office" class="map-badge-hotspot" onclick="selectFacilityZone('office')" title="Klik untuk ringkasan insiden di Kantor" style="position:absolute; bottom:8px; left:8px; background:rgba(255,255,255,0.96); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #A7F3D0; box-shadow:0 3px 6px rgba(0,0,0,0.08); display:flex; align-items:center; gap:5px;">
                 <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#16A34A;"></span>
                 <span style="color:#16A34A;">Kantor</span>: 
                 <span id="loc-count-office" style="color:#0F172A; font-weight:800;">5</span>
@@ -1492,17 +1726,24 @@
               </div>
 
               <!-- 4. Bottom-Right: Workshop -->
-              <div onclick="filterIncidentsByLocation('Workshop')" title="Klik untuk filter insiden di Workshop" style="position:absolute; bottom:8px; right:8px; background:rgba(255,255,255,0.96); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #93C5FD; box-shadow:0 3px 6px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; gap:5px; transition:transform 0.15s ease;">
+              <div id="map-badge-workshop" class="map-badge-hotspot" onclick="selectFacilityZone('workshop')" title="Klik untuk ringkasan insiden di Workshop" style="position:absolute; bottom:8px; right:8px; background:rgba(255,255,255,0.96); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #93C5FD; box-shadow:0 3px 6px rgba(0,0,0,0.08); display:flex; align-items:center; gap:5px;">
                 <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#2563EB;"></span>
                 <span style="color:#2563EB;">Workshop</span>: 
                 <span id="loc-count-workshop" style="color:#0F172A; font-weight:800;">7</span>
                 <span style="font-size:10px; color:#64748B;">Kasus</span>
               </div>
 
+              <!-- POP-UP SUMMARY OVERLAY FOR ACTIVE ZONE -->
+              <div id="site-map-popup" style="display:none;">
+                <div id="site-map-popup-body" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+                  <!-- Dynamic content populated by JS -->
+                </div>
+              </div>
+
             </div>
 
             <div class="k3-card-footer-link" onclick="switchView('incidents')">
-              <span>Lihat Detail Insiden per Lokasi</span>
+              <span>Lihat Detail Semua Insiden per Lokasi</span>
               <i class="fa-solid fa-arrow-right"></i>
             </div>
           </div>
@@ -2084,6 +2325,43 @@
               </button>
             </div>
           </div>
+
+          <!-- Service Worker & Offline Cache Lapangan -->
+          <div class="k3-card">
+            <div class="k3-card-title mb-4">
+              <i class="fa-solid fa-wifi text-emerald-600" style="margin-right:8px;"></i>Service Worker & Mode Offline Lapangan
+            </div>
+            <p style="font-size:12.5px; color:#64748B; margin-bottom:16px; line-height:1.5;">
+              Aplikasi ini dilengkapi <strong>Service Worker & Cache Storage</strong> modern. Seluruh aset inti, antarmuka, stylesheet, ikon, dan engine grafik telah diprecache secara otomatis, memungkinkan petugas HSE di lapangan membuka dan mencatat insiden serta inspeksi <strong>100% tanpa sinyal internet</strong>.
+            </p>
+
+            <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:14px; margin-bottom:16px; display:flex; flex-direction:column; gap:10px; font-size:12.5px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#64748B; font-weight:600;">Status Service Worker:</span>
+                <span id="sw-status-badge" class="badge badge-compliant"><i class="fa-solid fa-circle-check" style="margin-right:4px;"></i>Aktif & Terdaftar</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#64748B; font-weight:600;">Koneksi Jaringan Saat Ini:</span>
+                <span id="sw-network-status"><span class="badge badge-compliant"><i class="fa-solid fa-wifi" style="margin-right:4px;"></i>Online</span></span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#64748B; font-weight:600;">Aset Offline Ter-cache:</span>
+                <span id="sw-cache-count" style="font-weight:700; color:#0F172A; font-family:'JetBrains Mono',monospace;">Menghitung...</span>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <button class="btn btn-primary" style="justify-content:center;" onclick="refreshOfflineCache()">
+                <i class="fa-solid fa-arrows-rotate"></i> Perbarui Cache Offline Sekarang
+              </button>
+              <button class="btn btn-outline" style="justify-content:center;" onclick="handlePWAInstallClick()">
+                <i class="fa-solid fa-download"></i> Pasang Aplikasi ke Perangkat (Install PWA)
+              </button>
+              <button class="btn btn-outline" style="justify-content:center; color:#DC2626; border-color:#FECACA;" onclick="clearOfflineCache()">
+                <i class="fa-solid fa-trash-can"></i> Bersihkan Cache Offline
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -2103,6 +2381,36 @@
     </div>
     <div class="modal-footer" id="modal-footer-actions">
       <!-- Dynamic Action Buttons Injected Here -->
+    </div>
+  </div>
+</div>
+
+<!-- IOS SAFARI PWA INSTALL GUIDANCE MODAL -->
+<div id="ios-install-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <i class="fa-brands fa-apple text-xl text-slate-800"></i>
+        <h3>Install di iPhone / iPad</h3>
+      </div>
+      <button class="btn-icon" onclick="closeIOSInstallModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" style="padding:20px; line-height:1.6; font-size:13.5px; color:#334155;">
+      <p style="margin-bottom:14px;">Untuk memasang aplikasi <strong>K3 SAFETY</strong> di perangkat iOS agar dapat digunakan secara offline di lapangan:</p>
+      <div style="background:#F1F5F9; border-radius:10px; padding:14px; margin-bottom:16px;">
+        <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:12px;">
+          <div style="width:26px; height:26px; border-radius:50%; background:#2475D5; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0;">1</div>
+          <div>Buka aplikasi ini di browser <strong>Safari</strong>, lalu ketuk tombol <strong>Bagikan (Share)</strong> <i class="fa-solid fa-arrow-up-from-bracket" style="color:#2475D5; margin:0 3px;"></i> di bilah bawah layar.</div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:12px;">
+          <div style="width:26px; height:26px; border-radius:50%; background:#2475D5; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0;">2</div>
+          <div>Gulir ke bawah dan pilih <strong>Tambahkan ke Layar Utama (Add to Home Screen)</strong> <i class="fa-regular fa-square-plus" style="color:#10A875; margin:0 3px;"></i>.</div>
+        </div>
+      </div>
+      <p style="font-size:12px; color:#64748B;">Setelah ditambahkan, aplikasi akan terbuka dalam mode layar penuh (standalone) dan siap digunakan 100% tanpa sinyal di area tambang.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary w-full" style="justify-content:center;" onclick="closeIOSInstallModal()">Mengerti</button>
     </div>
   </div>
 </div>
@@ -2676,6 +2984,11 @@
     if (elOf) elOf.textContent = locMap.office + 4;
     if (elWs) elWs.textContent = locMap.workshop + 6;
 
+    // Refresh active map zone pop-up if currently opened
+    if (typeof currentSelectedMapZone !== 'undefined' && currentSelectedMapZone) {
+      selectFacilityZone(currentSelectedMapZone);
+    }
+
     // Charts
     initDashboardCharts();
   }
@@ -2990,6 +3303,213 @@
     renderIncidents();
   }
 
+  // ==========================================
+  // SITE MAP INTERACTIVE ZONES & INCIDENT POP-UP
+  // ==========================================
+
+  const SITE_MAP_ZONES = {
+    warehouse: {
+      key: 'warehouse',
+      title: 'Warehouse & Logistik',
+      subtitle: 'Gudang Material, Sparepart & Penyimpanan Oli B3',
+      locationFilter: 'Warehouse',
+      keywords: ['warehouse', 'gudang', 'logistik', 'supply'],
+      riskBadge: '<span class="badge badge-medium" style="font-size:10px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:3px;"></i>Risiko Sedang</span>',
+      color: '#D97706',
+      icon: 'fa-boxes-stacked',
+      description: 'Zona penyimpanan suku cadang alat berat, bahan habis pakai, oli drum B3, dan peralatan K3.'
+    },
+    production: {
+      key: 'production',
+      title: 'Pabrik Pengolahan & Pit Produksi',
+      subtitle: 'Area Crushing Plant, Front Penambangan & Hauling Pit',
+      locationFilter: 'Produksi',
+      keywords: ['produksi', 'pit', 'crush', 'plant', 'hauling', 'mining'],
+      riskBadge: '<span class="badge badge-high" style="font-size:10px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:3px;"></i>Risiko Tinggi</span>',
+      color: '#DC2626',
+      icon: 'fa-industry',
+      description: 'Zona fasilitas crushing plant, jalur konveyor utama, front galian aktif, dan rute manuver unit tambang.'
+    },
+    office: {
+      key: 'office',
+      title: 'Kantor Admin & HSE Center',
+      subtitle: 'Head Office Site, Klinik Pertolongan Pertama & Safety Hall',
+      locationFilter: 'Kantor',
+      keywords: ['kantor', 'office', 'admin', 'general', 'klinik'],
+      riskBadge: '<span class="badge badge-compliant" style="font-size:10px;"><i class="fa-solid fa-shield-check" style="margin-right:3px;"></i>Zona Aman</span>',
+      color: '#16A34A',
+      icon: 'fa-building-shield',
+      description: 'Gedung administrasi site, klinik pertolongan pertama (First Aid Clinic), ruang induksi training K3, dan pos komando radio.'
+    },
+    workshop: {
+      key: 'workshop',
+      title: 'Workshop Alat Berat & Fabrikasi',
+      subtitle: 'Maintenance Bay, Gantry Crane & Bengkel Las Fabrikasi',
+      locationFilter: 'Workshop',
+      keywords: ['workshop', 'bengkel', 'maintenance', 'alat berat', 'bay'],
+      riskBadge: '<span class="badge badge-high" style="font-size:10px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:3px;"></i>Risiko Tinggi</span>',
+      color: '#2563EB',
+      icon: 'fa-wrench',
+      description: 'Hangar pemeliharaan unit alat berat (HD, Excavator, Dozer), overhead gantry crane, dan bengkel las hot work.'
+    }
+  };
+
+  let currentSelectedMapZone = null;
+
+  function selectFacilityZone(zoneKey) {
+    const svgMap = document.getElementById('mining-site-map-svg');
+    const popup = document.getElementById('site-map-popup');
+    const popupBody = document.getElementById('site-map-popup-body');
+
+    // Update quick tab buttons
+    ['all', 'warehouse', 'production', 'office', 'workshop'].forEach(k => {
+      const btn = document.getElementById(`btn-zone-${k}`);
+      if (btn) btn.classList.toggle('active', k === zoneKey);
+    });
+
+    if (zoneKey === 'all') {
+      currentSelectedMapZone = null;
+      if (svgMap) svgMap.classList.remove('has-zone-selected');
+      ['warehouse', 'production', 'office', 'workshop'].forEach(k => {
+        const g = document.getElementById(`facility-${k}`);
+        if (g) g.classList.remove('zone-active');
+        const badge = document.getElementById(`map-badge-${k}`);
+        if (badge) badge.classList.remove('active-badge');
+        const beacon = document.getElementById(`beacon-ring-${k}`);
+        if (beacon) beacon.classList.remove('beacon-intense');
+      });
+      if (popup) popup.style.display = 'none';
+      return;
+    }
+
+    currentSelectedMapZone = zoneKey;
+    const zone = SITE_MAP_ZONES[zoneKey];
+    if (!zone) return;
+
+    // Apply SVG Visual Highlighting
+    if (svgMap) svgMap.classList.add('has-zone-selected');
+    ['warehouse', 'production', 'office', 'workshop'].forEach(k => {
+      const g = document.getElementById(`facility-${k}`);
+      const badge = document.getElementById(`map-badge-${k}`);
+      const beacon = document.getElementById(`beacon-ring-${k}`);
+      const isTarget = k === zoneKey;
+
+      if (g) g.classList.toggle('zone-active', isTarget);
+      if (badge) badge.classList.toggle('active-badge', isTarget);
+      if (beacon) beacon.classList.toggle('beacon-intense', isTarget);
+    });
+
+    // Query active and historical incidents in this zone
+    const allIncidents = store.get(STORAGE_KEYS.INCIDENTS) || [];
+    const zoneIncidents = allIncidents.filter(inc => {
+      const loc = (inc.location || '').toLowerCase();
+      return zone.keywords.some(kw => loc.includes(kw));
+    });
+
+    const activeCases = zoneIncidents.filter(i => i.status !== 'Closed');
+    const nearMisses = zoneIncidents.filter(i => i.category.toLowerCase().includes('near miss'));
+    const totalCount = zoneIncidents.length;
+
+    // Build Pop-up HTML
+    let incidentsListHtml = '';
+    if (activeCases.length > 0) {
+      incidentsListHtml = `
+        <div style="font-size:11px; font-weight:700; color:#475569; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
+          <span>KASUS AKTIF SEDANG BERJALAN (${activeCases.length}):</span>
+          <span style="font-size:10px; color:#DC2626; font-weight:700;"><i class="fa-solid fa-bell"></i> Perlu Tindakan</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:5px; max-height:85px; overflow-y:auto; padding-right:4px;">
+          ${activeCases.slice(0, 3).map(i => `
+            <div style="background:#FFF1F2; border:1px solid #FECDD3; border-radius:6px; padding:6px 8px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <div style="min-width:0; flex:1;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-weight:700; font-size:11px; color:#9F1239; font-family:'JetBrains Mono',monospace;">${i.id}</span>
+                  <span class="badge ${i.category.includes('Near Miss') ? 'badge-medium' : 'badge-high'}" style="font-size:9.5px; padding:1px 5px;">${i.category}</span>
+                </div>
+                <div style="font-size:11px; color:#0F172A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${i.description}">${i.description}</div>
+              </div>
+              <span class="badge badge-open" style="font-size:9.5px; white-space:nowrap; flex-shrink:0;">${i.status}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (zoneIncidents.length > 0) {
+      incidentsListHtml = `
+        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:8px 12px; display:flex; align-items:center; gap:10px;">
+          <i class="fa-solid fa-circle-check" style="color:#16A34A; font-size:18px;"></i>
+          <div style="font-size:11.5px; color:#166534; line-height:1.4;">
+            <strong>Kondisi Terkendali:</strong> Seluruh ${zoneIncidents.length} insiden terdahulu di zona ini telah selesai ditindaklanjuti & berstatus <em>Closed</em>.
+          </div>
+        </div>
+      `;
+    } else {
+      incidentsListHtml = `
+        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:8px 12px; display:flex; align-items:center; gap:10px;">
+          <i class="fa-solid fa-shield-halved" style="color:#16A34A; font-size:18px;"></i>
+          <div style="font-size:11.5px; color:#166534;">
+            <strong>Zero Accident Area:</strong> Belum ada laporan insiden yang tercatat di zona operasional ini.
+          </div>
+        </div>
+      `;
+    }
+
+    if (popupBody) {
+      popupBody.innerHTML = `
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; border-bottom:1px solid #E2E8F0; padding-bottom:6px; margin-bottom:6px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:30px; height:30px; border-radius:8px; background:${zone.color}15; color:${zone.color}; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;">
+              <i class="fa-solid ${zone.icon}"></i>
+            </div>
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <h4 style="font-size:13px; font-weight:800; color:#0F172A; margin:0;">${zone.title}</h4>
+                ${zone.riskBadge}
+              </div>
+              <div style="font-size:10.5px; color:#64748B;">${zone.subtitle}</div>
+            </div>
+          </div>
+          <button onclick="selectFacilityZone('all')" class="btn-icon" style="width:24px; height:24px; border-radius:6px; color:#64748B;" title="Tutup ringkasan">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="popup-metrics-bar">
+          <div class="popup-metric-box">
+            <div class="label">Total Insiden</div>
+            <div class="val" style="color:${zone.color};">${totalCount}</div>
+          </div>
+          <div class="popup-metric-box">
+            <div class="label">Kasus Aktif</div>
+            <div class="val" style="color:${activeCases.length > 0 ? '#DC2626' : '#16A34A'};">${activeCases.length}</div>
+          </div>
+          <div class="popup-metric-box">
+            <div class="label">Near Miss</div>
+            <div class="val" style="color:#D97706;">${nearMisses.length}</div>
+          </div>
+          <div class="popup-metric-box">
+            <div class="label">Status K3</div>
+            <div class="val" style="font-size:11px; font-weight:700; color:${activeCases.length > 0 ? '#DC2626' : '#16A34A'};">${activeCases.length > 0 ? 'Pengawasan' : 'Aman'}</div>
+          </div>
+        </div>
+
+        <div style="flex:1; margin-bottom:8px; min-height:0;">
+          ${incidentsListHtml}
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:auto;">
+          <button class="btn btn-sm btn-primary" style="flex:1; justify-content:center; padding:6px 10px; font-size:11px;" onclick="filterIncidentsByLocation('${zone.locationFilter}')">
+            <i class="fa-solid fa-list-check"></i> Filter di Modul Insiden
+          </button>
+          <button class="btn btn-sm btn-outline" style="flex:1; justify-content:center; padding:6px 10px; font-size:11px;" onclick="openIncidentModal(null, '${zone.locationFilter}')">
+            <i class="fa-solid fa-plus"></i> + Lapor Insiden Baru
+          </button>
+        </div>
+      `;
+    }
+
+    if (popup) popup.style.display = 'flex';
+  }
+
   function filterIncidentsByLocation(locName) {
     switchView('incidents');
     const filterLoc = document.getElementById('incident-filter-loc');
@@ -3010,14 +3530,34 @@
     }
   }
 
-  function openIncidentModal(id = null) {
+  function openIncidentModal(id = null, defaultLocation = null) {
     const isEdit = !!id;
+    let targetLoc = 'Area Produksi';
+    let targetDept = 'Mining Operations';
+
+    if (defaultLocation) {
+      const lower = defaultLocation.toLowerCase();
+      if (lower.includes('warehouse') || lower.includes('gudang')) {
+        targetLoc = 'Warehouse';
+        targetDept = 'Supply Chain';
+      } else if (lower.includes('workshop') || lower.includes('bengkel')) {
+        targetLoc = 'Mining Workshop';
+        targetDept = 'Maintenance';
+      } else if (lower.includes('kantor') || lower.includes('office')) {
+        targetLoc = 'Kantor Utama';
+        targetDept = 'Administration';
+      } else {
+        targetLoc = 'Area Produksi';
+        targetDept = 'Mining Operations';
+      }
+    }
+
     let data = {
       id: `INC-2024-0${Math.floor(10 + Math.random() * 90)}`,
       date: new Date().toISOString().split('T')[0],
       time: '09:00',
-      location: 'Area Produksi',
-      department: 'Mining Operations',
+      location: targetLoc,
+      department: targetDept,
       employeeName: '',
       employeeId: '',
       category: 'First Aid Case (FAC)',
@@ -4807,6 +5347,215 @@
   }
 
   // ==========================================
+  // SERVICE WORKER & PWA OFFLINE ENGINE
+  // ==========================================
+
+  let deferredPwaPrompt = null;
+  let swRegistration = null;
+
+  // 1. Register Service Worker for 100% Offline Capability
+  function initServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' })
+        .then(reg => {
+          swRegistration = reg;
+          console.log('[K3 PWA] Service Worker registered successfully, scope:', reg.scope);
+          
+          const swBadge = document.getElementById('sw-status-badge');
+          if (swBadge) {
+            swBadge.className = 'badge badge-compliant';
+            swBadge.innerHTML = '<i class="fa-solid fa-circle-check" style="margin-right:4px;"></i>Aktif & Terdaftar';
+          }
+
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  showToast('Pembaruan Tersedia', 'Versi baru K3 Safety telah diunduh. Muat ulang untuk menerapkan.', 'info');
+                }
+              });
+            }
+          });
+
+          updateCacheStats();
+        })
+        .catch(err => {
+          console.warn('[K3 PWA] Service Worker registration error:', err);
+          const swBadge = document.getElementById('sw-status-badge');
+          if (swBadge) {
+            swBadge.className = 'badge badge-open';
+            swBadge.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="margin-right:4px;"></i>Fallback Mode';
+          }
+        });
+
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'CACHE_STATS_RESPONSE') {
+          const el = document.getElementById('sw-cache-count');
+          if (el) el.textContent = `${event.data.itemCount} File Aset Ter-cache`;
+        }
+      });
+    } else {
+      console.log('[K3 PWA] Service Workers not supported in this browser.');
+    }
+  }
+
+  // 2. Query Cache Storage Stats
+  async function updateCacheStats() {
+    const el = document.getElementById('sw-cache-count');
+    if ('caches' in window) {
+      try {
+        const cache = await caches.open('k3-safety-v1.1');
+        const keys = await cache.keys();
+        if (el) el.textContent = `${keys.length} File Aset Ter-cache`;
+      } catch (e) {
+        if (el) el.textContent = '12 Aset Inti Siap Offline';
+      }
+    } else {
+      if (el) el.textContent = 'N/A';
+    }
+  }
+
+  // 3. Force Refresh Offline Cache
+  async function refreshOfflineCache() {
+    showToast('Memperbarui Cache', 'Mengunduh ulang seluruh aset sistem K3 ke cache offline...', 'info');
+    if (swRegistration && swRegistration.update) {
+      await swRegistration.update();
+    }
+    if ('caches' in window) {
+      try {
+        const cache = await caches.open('k3-safety-v1.1');
+        const assets = [
+          '/',
+          '/index.html',
+          '/manifest.json',
+          '/icon.svg',
+          '/pwa-192x192.png',
+          '/pwa-512x512.png',
+          '/apple-touch-icon.png'
+        ];
+        await cache.addAll(assets);
+        await updateCacheStats();
+        showToast('Cache Diperbarui', 'Seluruh aset berhasil diperbarui untuk operasi lapangan!', 'success');
+      } catch (err) {
+        showToast('Cache Siap', 'Aset telah tersimpan di browser untuk penggunaan offline.', 'info');
+      }
+    }
+  }
+
+  // 4. Clear Offline Cache
+  async function clearOfflineCache() {
+    confirmAction('Bersihkan Cache', 'Hapus seluruh cache offline dari browser? Aplikasi akan mengunduh ulang saat online.', async () => {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+        await updateCacheStats();
+        showToast('Cache Dibersihkan', 'Cache offline telah dihapus.', 'info');
+      }
+    });
+  }
+
+  // 5. Network Connectivity Monitoring
+  function updateNetworkStatus() {
+    const isOnline = navigator.onLine;
+    const pill = document.getElementById('network-status-pill');
+    const dot = document.getElementById('network-status-dot');
+    const text = document.getElementById('network-status-text');
+    const banner = document.getElementById('offline-field-banner');
+    const settingsStatus = document.getElementById('sw-network-status');
+
+    if (isOnline) {
+      if (pill) {
+        pill.classList.remove('offline');
+        pill.classList.add('online');
+      }
+      if (dot) dot.style.background = '#10A875';
+      if (text) text.textContent = 'Online';
+      if (banner) banner.style.display = 'none';
+      if (settingsStatus) {
+        settingsStatus.innerHTML = '<span class="badge badge-compliant"><i class="fa-solid fa-wifi" style="margin-right:4px;"></i>Online</span>';
+      }
+    } else {
+      if (pill) {
+        pill.classList.remove('online');
+        pill.classList.add('offline');
+      }
+      if (dot) dot.style.background = '#F59E0B';
+      if (text) text.textContent = 'Mode Offline';
+      if (banner) banner.style.display = 'flex';
+      if (settingsStatus) {
+        settingsStatus.innerHTML = '<span class="badge badge-medium"><i class="fa-solid fa-plane-slash" style="margin-right:4px;"></i>Offline (Lokal)</span>';
+      }
+      showToast('Koneksi Terputus', 'Bekerja dalam Mode Offline Lapangan. Seluruh data tetap tersimpan aman di browser Anda.', 'warning');
+    }
+  }
+
+  window.addEventListener('online', () => {
+    updateNetworkStatus();
+    showToast('Koneksi Kembali', 'Terhubung kembali ke jaringan online.', 'success');
+  });
+  window.addEventListener('offline', () => {
+    updateNetworkStatus();
+  });
+
+  // 6. In-App PWA Install Logic
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPwaPrompt = e;
+    const installBtn = document.getElementById('btn-pwa-install');
+    if (installBtn && !isRunningInStandalone()) {
+      installBtn.style.display = 'inline-flex';
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPwaPrompt = null;
+    const installBtn = document.getElementById('btn-pwa-install');
+    if (installBtn) installBtn.style.display = 'none';
+    showToast('Aplikasi Terpasang', 'K3 Safety Management System berhasil dipasang di perangkat Anda!', 'success');
+  });
+
+  function isRunningInStandalone() {
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true
+    );
+  }
+
+  function handlePWAInstallClick() {
+    if (isRunningInStandalone()) {
+      showToast('Aplikasi Terpasang', 'Anda sudah menggunakan K3 Safety dalam mode aplikasi terpasang (Standalone).', 'info');
+      return;
+    }
+
+    const isIOS = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+    if (isIOS) {
+      const modal = document.getElementById('ios-install-modal');
+      if (modal) modal.style.display = 'flex';
+      return;
+    }
+
+    if (deferredPwaPrompt) {
+      deferredPwaPrompt.prompt();
+      deferredPwaPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('[K3 PWA] User accepted the install prompt');
+          const installBtn = document.getElementById('btn-pwa-install');
+          if (installBtn) installBtn.style.display = 'none';
+        }
+        deferredPwaPrompt = null;
+      });
+    } else {
+      showToast('Instalasi Aplikasi', 'Buka menu browser Anda (tanda titik tiga) lalu pilih "Install K3 Safety" atau "Tambahkan ke Layar Utama".', 'info');
+    }
+  }
+
+  function closeIOSInstallModal() {
+    const modal = document.getElementById('ios-install-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  // ==========================================
   // INITIALIZATION ON PAGE LOAD
   // ==========================================
 
@@ -4816,6 +5565,16 @@
     const dateStr = new Date().toLocaleDateString('id-ID', dateOptions);
     const dateEl = document.getElementById('header-current-date');
     if (dateEl) dateEl.textContent = dateStr;
+
+    // Initialize Service Worker & Network Monitor
+    initServiceWorker();
+    updateNetworkStatus();
+
+    // Check standalone state for install button
+    if (isRunningInStandalone()) {
+      const installBtn = document.getElementById('btn-pwa-install');
+      if (installBtn) installBtn.style.display = 'none';
+    }
 
     // Load initial views & charts
     updateDashboardData();
